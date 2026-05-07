@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Running lightweight automated review checks..."
-          if git grep -nE "TODO|FIXME" -- . ':!.github/pull_request_template.md'; then
+          if git grep -nE "TODO|FIXME" -- . ':!.github/pull_request_template.md' ':!specs/templates/spec-template.md' ':!docs/adr/0000-template.md'; then
             echo "Found TODO/FIXME markers. Resolve or remove before merge."
             exit 1
           fi
@@ -63,7 +63,7 @@ jobs:
 
             const coverageLine = body.match(/Coverage result:\s*`([0-9]+(?:\.[0-9]+)?)%`/);
             if (!coverageLine) {
-              core.setFailed("PR body must include a numeric `Coverage result: NN%` value.");
+              core.setFailed("PR body must include `Coverage result: `XX.X%`` with a numeric percentage.");
               return;
             }
 
