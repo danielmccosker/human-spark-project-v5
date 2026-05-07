@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Running lightweight automated review checks..."
-          if git grep -nE "TODO|FIXME" -- . ':!.github/pull_request_template.md' ':!specs/templates/spec-template.md' ':!docs/adr/0000-template.md'; then
+          if git grep -nE "TODO|FIXME" -- . ':(exclude).github/workflows/**' ':(exclude).github/pull_request_template.md' ':(exclude)**/templates/**' ':(exclude)**/*-template.md'; then
             echo "Found TODO/FIXME markers. Resolve or remove before merge."
             exit 1
           fi
@@ -37,7 +37,7 @@ jobs:
             const title = pr.title || "";
             const body = pr.body || "";
 
-            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9._\/\-]+\))?(!)?:\s.+$/;
+            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9-]+\))?(!)?:\s.+$/;
             if (!conventional.test(title)) {
               core.setFailed("PR title must follow Conventional Commits.");
               return;
@@ -68,8 +68,8 @@ jobs:
             }
 
             const coverage = Number(coverageLine[1]);
-            if (Number.isNaN(coverage) || coverage < 80) {
-              core.setFailed(`Coverage must be at least 80%. Current: ${coverage}%`);
+            if (Number.isNaN(coverage) || coverage < 80 || coverage > 100) {
+              core.setFailed(`Coverage must be between 80% and 100%. Current: ${coverage}%`);
               return;
             }
 
