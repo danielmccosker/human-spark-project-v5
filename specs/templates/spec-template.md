@@ -2,7 +2,7 @@
 
 - Status: draft
 - Owner: <owner>
-- Date: YYYY-MM-DD
+- Date: YYYY-MM-DD (ISO 8601)
 - Human approval: <name + date + evidence link>
 
 ## Problem

@@ -10,4 +10,4 @@
 - [ ] Integration tests pass
 - [ ] E2E tests pass
 - [ ] Coverage >= 80%
-- [ ] Coverage result: `NN%`
+- [ ] Coverage result: `XX.X%` (replace with actual numeric percentage)

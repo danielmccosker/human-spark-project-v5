@@ -61,7 +61,7 @@ jobs:
               return;
             }
 
-            const coverageLine = body.match(/Coverage result:\s*`([0-9]+(?:\.[0-9]+)?)%`/i);
+            const coverageLine = body.match(/Coverage result:\s*`([0-9]+(?:\.[0-9]+)?)%`/);
             if (!coverageLine) {
               core.setFailed("PR body must include a numeric `Coverage result: NN%` value.");
               return;
