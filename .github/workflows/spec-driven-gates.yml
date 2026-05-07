@@ -37,7 +37,7 @@ jobs:
             const title = pr.title || "";
             const body = pr.body || "";
 
-            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9._\/-]+\))?(!)?:\s.+$/;
+            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9._\/\-]+\))?(!)?:\s.+$/;
             if (!conventional.test(title)) {
               core.setFailed("PR title must follow Conventional Commits.");
               return;
@@ -63,7 +63,7 @@ jobs:
 
             const coverageLine = body.match(/Coverage result:\s*`([0-9]+(?:\.[0-9]+)?)%`/);
             if (!coverageLine) {
-              core.setFailed("PR body must include `Coverage result: `XX.X%`` with a numeric percentage.");
+              core.setFailed("PR body must include `Coverage result: XX.X%` with a numeric percentage.");
               return;
             }
 
