@@ -1,0 +1,76 @@
+name: Spec-driven Gates
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  automated-review:
+    name: Automated code review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Basic automated review checks
+        run: |
+          set -euo pipefail
+          echo "Running lightweight automated review checks..."
+          if git grep -nE "TODO|FIXME" -- . ':(exclude).github/workflows/**' ':(exclude).github/pull_request_template.md' ':(exclude)**/templates/**' ':(exclude)**/*-template.md'; then
+            echo "Found TODO/FIXME markers. Resolve or remove before merge."
+            exit 1
+          fi
+
+  methodology-gates:
+    name: Methodology and verification gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title and checklist
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr.title || "";
+            const body = pr.body || "";
+
+            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9-]+\))?(!)?:\s.+$/;
+            if (!conventional.test(title)) {
+              core.setFailed("PR title must follow Conventional Commits.");
+              return;
+            }
+
+            const requiredChecks = [
+              "- [x] Linked approved spec(s):",
+              "- [x] Linked approved ADR(s) (or N/A):",
+              "- [x] No hand-written production code",
+              "- [x] Automated code review passes",
+              "- [x] CodeQL security scan passes",
+              "- [x] Unit tests pass",
+              "- [x] Integration tests pass",
+              "- [x] E2E tests pass",
+              "- [x] Coverage >= 80%"
+            ];
+
+            const missing = requiredChecks.filter((line) => !body.includes(line));
+            if (missing.length > 0) {
+              core.setFailed(`PR checklist is incomplete. Missing checked items:\n${missing.join("\n")}`);
+              return;
+            }
+
+            const coverageLine = body.match(/Coverage result:\s*`([0-9]+(?:\.[0-9]+)?)%`/);
+            if (!coverageLine) {
+              core.setFailed("PR body must include `Coverage result: XX.X%` with a numeric percentage.");
+              return;
+            }
+
+            const coverage = Number(coverageLine[1]);
+            if (Number.isNaN(coverage) || coverage < 80 || coverage > 100) {
+              core.setFailed(`Coverage must be between 80% and 100%. Current: ${coverage}%`);
+              return;
+            }
+
+            core.info("PR title and methodology checklist satisfy required gates.");
