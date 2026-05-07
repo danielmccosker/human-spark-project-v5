@@ -37,7 +37,7 @@ jobs:
             const title = pr.title || "";
             const body = pr.body || "";
 
-            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._\/-]+\))?(!)?:\s.+$/;
+            const conventional = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9._\/-]+\))?(!)?:\s.+$/;
             if (!conventional.test(title)) {
               core.setFailed("PR title must follow Conventional Commits.");
               return;
